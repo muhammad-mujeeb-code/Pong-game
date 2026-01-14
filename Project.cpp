@@ -1,15 +1,18 @@
 #include <iostream>
-#include <conio.h>
-#include <windows.h>
+#include <conio.h>    // For _kbhit() and _getch() - non-blocking keyboard input
+#include <windows.h>  // For Windows API functions like SetConsoleCursorPosition
 
 using namespace std;
 
+// Move cursor to (x,y) in console
 void gotoxy(int x, int y){
     COORD coord;
     coord.X = x;
     coord.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
 }
+
+// Draw paddle, ball, borders, score, lives
 void drawboard(int paddleX, int ballX, int ballY, int score, int lives){
     system("cls");
 
@@ -19,6 +22,7 @@ void drawboard(int paddleX, int ballX, int ballY, int score, int lives){
     gotoxy(ballX, ballY);
     cout<<"O";
 
+    // top & bottom borders
     for(int i=0; i<42; i++){
         gotoxy(i,0);
         cout<<"*";
@@ -26,6 +30,7 @@ void drawboard(int paddleX, int ballX, int ballY, int score, int lives){
         cout<<"*";
     }
 
+    // left & right borders
     for(int i=0; i<25; i++){
         gotoxy(0,i);
         cout<<"*";
@@ -59,6 +64,7 @@ int main(){
     system ("pause");
 
     while(lives>0){
+        // input
         if(_kbhit()){
             char key = _getch();
 
@@ -79,14 +85,17 @@ int main(){
             }
         }
 
+        // update ball
         ballX = ballX + ballDirX;
         ballY = ballY + ballDirY;
 
+        // bounce on paddle
         if(ballY == 20 && ballX >= paddleX && ballX <= paddleX+5){
             ballDirY = -ballDirY;
             score++;
         }
 
+        // bounce on walls
         if(ballX == 1 || ballX == 40){
             ballDirX = -ballDirX;
         }
@@ -95,6 +104,7 @@ int main(){
             ballDirY = -ballDirY;
         }
 
+        // missed paddle → lose life
         if(ballY == 23){
             lives--;
             ballX = 20;
@@ -106,6 +116,7 @@ int main(){
         Sleep(100);
     }
 
+    // game over
     system("cls");
 	
 	gotoxy(15, 8);
